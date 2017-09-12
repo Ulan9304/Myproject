@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load urlify %}
-
+ 
 {% block head_title %}
 {{ instance.title }} | {{ block.super }}
 {% endblock %}
@@ -45,7 +45,65 @@ Linkedin
 <hr/>
 <br/>
 
-<div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div>
+<hr>
+
+
+<!-- {% block comment %}
+    <h1>New comment</h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Send</button>
+    </form>
+{% endblock %} -->
+
+{% block com %}
+<form action="{% url "post:add_comment_to_post" slug=instance.slug %}" method="POST"
+enctype="multipart/form-data">
+    {% csrf_token %}
+{{ form.as_p }}
+    <input type="submit" class="button" value="Добавить комментарий">
+    </form>
+{% for comment in comments %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}
+        </div>
+        <strong>{{ comment.author }}</strong>
+
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}
+{% endblock %}
+
+
+<!-- <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div> -->
+<!-- Comments form -->
+<!-- {% block article %}
+<h4>{{ article.article_date }}</h4>
+<h2>{{ article.article_title }}</h2>
+<p>{{ article.article_text }}</p>
+<hr>
+<div class="large-offset-1 large-8 columns">
+<p>Комментарии:</p>
+<div height="1" style="border-bottom: 1px dotted #000033; "></div>
+    {%  for comment in comments %}
+    <p>{{ comment.comments_text }}</p>
+    <p align="right"> {{ comment.comments_author.username}}  {{comment.comments_date}}</p>
+<div height="1" style="border-bottom: 1px dotted #000033; "></div>
+
+    {% endfor %}
+    {% if username %}
+    <form action="/articles/addcomment/{{ article.id }}/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" class="button" value="Добавить комментарий">
+    </form>
+    {% endif %}
+ </div>
+
+ {% endblock %} -->
+
 
 
 </div>

@@ -17,21 +17,24 @@
 
 </head>
 <body>
-	<div id="fb-root"></div>
+	<!-- <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.10";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+}(document, 'script', 'facebook-jssdk'));</script> -->
   {% include "messages_display.html" %}
 
   <div class = 'container'>
 {% block content %}
+{% block com %}
+{% endblock %}
 {% endblock %}
 
 </div>
+
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>

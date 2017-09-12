@@ -1,16 +1,15 @@
 from urllib.parse import quote_plus
 
-
-from django.contrib import messages
-from django.http import  HttpResponse, HttpResponseRedirect
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
+from django.contrib import messages 
+from django.http import  HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.db.models import Q 
+from django.shortcuts import render, get_object_or_404, redirect 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger 
 from django.utils import timezone
 
-
-from .forms import PostForm
-from .models import Post
+from .forms import PostForm,CommentForm
+from .models import Post, Comment
 
 
 
@@ -38,12 +37,16 @@ def post_create(request):
 
 def post_detail(request, slug):
     instance = get_object_or_404(Post, slug=slug)
+    comments = instance.comments.all()
+    form = CommentForm()
     if instance.publish > timezone.now() or instance.draft:
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
     share_string = quote_plus(instance.content)
     context = {
         "title": instance.title,
+        "form": form,
+        "comments": comments,
         "instance":instance,
         "share_string": share_string,
     }
@@ -110,3 +113,43 @@ def post_delete(request, slug=None):
     instance.delete()
     messages.success(request, "Successfully deleted")
     return redirect("post:list")
+
+
+def add_comment_to_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            print("!!!!!!")
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+    return redirect(reverse('post:detail', kwargs = {"slug": post.slug}))
+
+
+# @login_required
+# def comment_approve(request, slug):
+#     comment = get_object_or_404(Comment, slug=slug)
+#     comment.approve()
+#     return redirect('post_detail', slug=comment.post.slug)
+
+# @login_required
+# def comment_remove(request, slug):
+#     comment = get_object_or_404(Comment, slug=slug)
+#     comment.delete()
+#     return redirect('post_detail', slug=comment.post.slug)
+#comments
+# def addcomment(request, article_id):
+#     if request.POST and ("pause" not in request.session):
+#         form = CommentForm(request.POST)
+#     if form.is_valid():
+
+#         comment = form.save(commit=False)
+#         comment.comments_author = request.user # ! получить пользователя !
+#         comment.comments_article = Article.objects.get(id=article_id)
+
+
+#     form.save()
+#     request.session.set_expiry(60)
+#     request.session['pause'] = True
+#     return redirect('/articles/get/%s/' % article_id)
